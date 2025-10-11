@@ -7,8 +7,8 @@ import psutil
 import sys
 
 # ---------------- CONFIG ----------------
-ASSISTANT_PATH = "/home/pi5-3/SmartMirror/python/withouteyescarmic.py"
-EYES_PATH = "/home/pi5-3/SmartMirror/python/car_eyes.py"
+ASSISTANT_PATH = "/home/pi5-3/car/fulltest/pi_assistant_dynamic_camera.py"
+EYES_PATH = "/home/pi5-3/car/fulltest/car_eyes.py"
 
 FOCUS_DURATION = 10        # seconds to stay focused after meaningful speech
 EMPTY_HEARD_LIMIT = 15     # consecutive empty "Heard:" before sleep
