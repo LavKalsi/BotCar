@@ -29,16 +29,16 @@ def stop():
     IN4.off()
 
 def move_forward():
-    IN1.on()
-    IN2.off()
-    IN3.on()
-    IN4.off()
-
-def move_backward():
     IN1.off()
     IN2.on()
     IN3.off()
     IN4.on()
+
+def move_backward():
+    IN1.on()
+    IN2.off()
+    IN3.on()
+    IN4.off()
 
 def move_left():
     IN1.off()
@@ -110,28 +110,68 @@ def index():
 <head>
 <meta charset="utf-8">
 <title>🚗 Car Controller</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { text-align: center; font-family: Arial; background: #f0f0f0; }
-img { border: 2px solid #333; margin-top: 10px; }
-button { width: 100px; height: 50px; margin: 5px; font-size: 16px; }
-.controls { margin-top: 10px; }
+body { 
+    text-align: center; 
+    font-family: Arial, sans-serif; 
+    background: #f0f0f0; 
+    margin: 0; 
+    padding: 0;
+}
+img { 
+    border: 2px solid #333; 
+    margin-top: 10px; 
+    max-width: 90%; 
+    height: auto;
+}
+button { 
+    width: 80px; 
+    height: 80px; 
+    margin: 5px; 
+    font-size: 20px; 
+    border: none; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    background-color: #4CAF50; 
+    color: white; 
+    transition: background-color 0.2s, transform 0.1s;
+}
+button:active {
+    background-color: #45a049;
+    transform: scale(0.95);
+}
+.controls { 
+    margin-top: 15px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px;
+}
+.row {
+    display: flex; 
+    gap: 10px; 
+    justify-content: center; 
+    flex-wrap: wrap;
+}
 </style>
 </head>
 <body>
 <h1>🚗 Car Controller</h1>
 <img src="/camera" width="640" height="480"/>
 <div class="controls">
-<div>
-<button onmousedown="startMove('forward', event)" onmouseup="stopMove(event)" ontouchstart="startMove('forward', event)" ontouchend="stopMove(event)">⬆️ Forward</button>
-</div>
-<div>
-<button onmousedown="startMove('left', event)" onmouseup="stopMove(event)" ontouchstart="startMove('left', event)" ontouchend="stopMove(event)">⬅️ Left</button>
-<button onmousedown="startMove('stop', event)" onmouseup="stopMove(event)" ontouchstart="startMove('stop', event)" ontouchend="stopMove(event)">🛑 Stop</button>
-<button onmousedown="startMove('right', event)" onmouseup="stopMove(event)" ontouchstart="startMove('right', event)" ontouchend="stopMove(event)">➡️ Right</button>
-</div>
-<div>
-<button onmousedown="startMove('backward', event)" onmouseup="stopMove(event)" ontouchstart="startMove('backward', event)" ontouchend="stopMove(event)">⬇️ Backward</button>
-</div>
+    <div class="row">
+        <button onmousedown="startMove('forward', event)" onmouseup="stopMove(event)" ontouchstart="startMove('forward', event)" ontouchend="stopMove(event)">⬆️</button>
+    </div>
+    <div class="row">
+        <button onmousedown="startMove('left', event)" onmouseup="stopMove(event)" ontouchstart="startMove('left', event)" ontouchend="stopMove(event)">⬅️</button>
+        <button onmousedown="startMove('stop', event)" onmouseup="stopMove(event)" ontouchstart="startMove('stop', event)" ontouchend="stopMove(event)">🛑</button>
+        <button onmousedown="startMove('right', event)" onmouseup="stopMove(event)" ontouchstart="startMove('right', event)" ontouchend="stopMove(event)">➡️</button>
+    </div>
+    <div class="row">
+        <button onmousedown="startMove('backward', event)" onmouseup="stopMove(event)" ontouchstart="startMove('backward', event)" ontouchend="stopMove(event)">⬇️</button>
+    </div>
 </div>
 
 <script>
