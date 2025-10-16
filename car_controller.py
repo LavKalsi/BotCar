@@ -4,9 +4,11 @@ import threading
 import time
 import pyautogui
 import psutil
-import sys
+import os
 
 # ---------------- CONFIG ----------------
+VENV_PYTHON = "/home/pi5-3/car/env/bin/python"
+
 ASSISTANT_PATH = "/home/pi5-3/carV2/fulltest/pi_assistant_dynamic_camera.py"
 EYES_PATH = "/home/pi5-3/carV2/fulltest/car_eyes.py"
 WIFI_CONTROL_PATH = "/home/pi5-3/carV2/fulltest/carwificontrol.py"
@@ -21,25 +23,34 @@ current_state = 'random'
 last_activity_time = time.time()
 empty_heard_count = 0      # count consecutive empty "Heard:"
 
+# ---------------- ENV FOR SUBPROCESSES ----------------
+env = os.environ.copy()
+env["PATH"] = "/home/pi5-3/car/env/bin:" + env["PATH"]
+
 # ---------------- LAUNCH PROCESSES ----------------
 print("🚀 Starting car assistant, eyes, and WiFi control...")
 
 assistant_proc = subprocess.Popen(
-    ["python3", "-u", ASSISTANT_PATH],  # -u = unbuffered
+    [VENV_PYTHON, "-u", ASSISTANT_PATH],  # -u = unbuffered
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
     text=True,
-    bufsize=1
+    bufsize=1,
+    env=env
 )
 
-eyes_proc = subprocess.Popen(["python3", EYES_PATH])
+eyes_proc = subprocess.Popen(
+    [VENV_PYTHON, EYES_PATH],
+    env=env
+)
 
 wifi_proc = subprocess.Popen(
-    ["python3", "-u", WIFI_CONTROL_PATH],
+    [VENV_PYTHON, "-u", WIFI_CONTROL_PATH],
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
     text=True,
-    bufsize=1
+    bufsize=1,
+    env=env
 )
 
 print("👀 All processes launched successfully.")
@@ -77,15 +88,13 @@ def monitor_assistant_output():
             heard_text = parts[1].strip() if len(parts) > 1 else ""
 
             if heard_text:
-                # Meaningful speech → focus immediately
                 last_activity_time = time.time()
                 empty_heard_count = 0
                 print(f"[ACTIVITY] Focus due to speech: {heard_text}", flush=True)
                 set_state('focus')
             else:
-                # Empty Heard → random movement only if not sleeping
                 empty_heard_count += 1
-                last_activity_time = time.time()  # minor activity
+                last_activity_time = time.time()
                 print(f"[ACTIVITY] Empty Heard detected ({empty_heard_count}/{EMPTY_HEARD_LIMIT})", flush=True)
                 
                 if current_state != 'sleep':
@@ -96,7 +105,6 @@ def monitor_assistant_output():
                     set_state('sleep')
                     empty_heard_count = 0
 
-        # ---- Other activity triggers ----
         elif (
             "wake word detected" in lower
             or "command heard" in lower
@@ -116,7 +124,6 @@ def state_manager():
     while True:
         elapsed = time.time() - last_activity_time
 
-        # Only switch to random if focus duration passed and not sleeping
         if elapsed >= FOCUS_DURATION and current_state != 'sleep':
             set_state('random')
 
