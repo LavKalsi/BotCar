@@ -7,20 +7,23 @@ import psutil
 import sys
 
 # ---------------- CONFIG ----------------
-ASSISTANT_PATH = "/home/pi5-3/SmartMirror/python/withouteyescarmic.py"
-EYES_PATH = "/home/pi5-3/SmartMirror/python/car_eyes.py"
+ASSISTANT_PATH = "/home/pi5-3/carV2/fulltest/pi_assistant_dynamic_camera.py"
+EYES_PATH = "/home/pi5-3/carV2/fulltest/car_eyes.py"
+WIFI_CONTROL_PATH = "/home/pi5-3/carV2/fulltest/carwificontrol.py"
 
 FOCUS_DURATION = 10        # seconds to stay focused after meaningful speech
 EMPTY_HEARD_LIMIT = 15     # consecutive empty "Heard:" before sleep
 CHECK_INTERVAL = 1         # state manager loop interval (seconds)
 
+current_state = 'random'
+
 # ---------------- STATE ----------------
 last_activity_time = time.time()
-current_state = None       # 'focus', 'random', 'sleep'
 empty_heard_count = 0      # count consecutive empty "Heard:"
 
 # ---------------- LAUNCH PROCESSES ----------------
-print("🚀 Starting car assistant and eyes...")
+print("🚀 Starting car assistant, eyes, and WiFi control...")
+
 assistant_proc = subprocess.Popen(
     ["python3", "-u", ASSISTANT_PATH],  # -u = unbuffered
     stdout=subprocess.PIPE,
@@ -28,8 +31,18 @@ assistant_proc = subprocess.Popen(
     text=True,
     bufsize=1
 )
+
 eyes_proc = subprocess.Popen(["python3", EYES_PATH])
-print("👀 Both processes launched successfully.")
+
+wifi_proc = subprocess.Popen(
+    ["python3", "-u", WIFI_CONTROL_PATH],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+    bufsize=1
+)
+
+print("👀 All processes launched successfully.")
 
 # ---------------- SEND KEYPRESS ----------------
 def set_state(new_state):
@@ -123,6 +136,7 @@ except KeyboardInterrupt:
     print("\n🛑 Exiting controller...")
     assistant_proc.terminate()
     eyes_proc.terminate()
+    wifi_proc.terminate()
     for proc in psutil.process_iter():
         if "python3" in proc.name():
             proc.kill()
